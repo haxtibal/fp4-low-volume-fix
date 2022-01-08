@@ -1,0 +1,6 @@
+id=fp4-low-volume-fix
+name=Fairphone 4 handset-mic low volume fix
+version=v1
+versionCode=1
+author=haxtibal
+description=Raises microphone level while handset-mic is selected as input device.
