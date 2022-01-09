@@ -23,6 +23,11 @@ whenever a recording with input device set to `"handset-mic"` happens and take i
 Original file was sampled from A.094.20211213. Be careful when applying to newer FP4 versions.
 If they changed `mixer_paths_lagoon_fp4.xml`, you would still see the old sampled version.
 
+Eventually the issue should be fixed by Fairphone in their stock ROM,
+rather than in a community reverse engineering attempt. Please consider opening a
+[request at support.fairphone.com](https://support.fairphone.com/hc/en-us/requests/new)
+to raise importance.
+
 
 ## Background
 
@@ -32,7 +37,9 @@ just like it would during a regular phone call. That doesn't make sense:
 - during a audio recording we're likely more distant, say 0.5 m to 5 m
 
 Because `p ~ 1/r`, a much lower signal is to be expected in the audio recording case.
-Therfore we need either more gain, or something like a compressor in the audio path.
+To get a reasonable recording level anyway one can e.g. increase gain, or route the audio input to
+signal processing stages like [AGC](https://en.wikipedia.org/wiki/Automatic_gain_control) or
+[compressor](https://en.wikipedia.org/wiki/Dynamic_range_compression).
 
 
 ## Fairphone 4 audio stack
@@ -69,22 +76,24 @@ and just combined public sources and findings from debugging sessions.
      | 34 PCM devices    |
      | 3189 controls     |
  ___________________________________
-|                                   |
 | Linux kernel 4.19                 | --- Device Tree Blob and Overlay,
 |                                   |     including qcom,msm-audio-apr subtree
 | Out-of-tree ALSA SoC layer driver |     handed over by bootloader
 | kona.c, module_platform_driver(   |
 |   kona_asoc_machine_driver);      | 
-|___________________________________|
-     | runs on
- ____|_________________________________________
-|    |    Qualcomm Snapdragon 750G SoC         |
-|    |    aka SM7225 Mobile Platform           |
-|    |                                         |
-| +----------------+                           |
-| | CPU Kryo 570   |                           |
-| | Cortex-A77/A55 |                           |
-| +----------------+                           |
+|___________________________________|  _____________
+     | runs on                        | QuRT OS     | 
+     |                                | proprietary |
+     |                                |_____________|
+     |                                    | runs on
+ ____|____________________________________|____
+|    |    Qualcomm Snapdragon 750G SoC    |    |
+|    |    aka SM7225 Mobile Platform      |    |
+|    |                                    |    |
+| +----------------+                      |    |
+| | CPU Kryo 570   |                      |    |
+| | Cortex-A77/A55 |                      |    |
+| +----------------+                      |    |
 | +--------------------+  +-----------------+  |
 | | Audio Codec WX938x |  | DSP Hexagon 694 |  |
 | +--------------------+  +-----------------+  |
@@ -103,3 +112,4 @@ References:
 - [Android MediaRecorder](https://developer.android.com/reference/android/media/MediaRecorder)
 - [AudioFlinger in AOSP 11](https://android.googlesource.com/platform/frameworks/av/+/refs/heads/android11-mainline-release/services/audioflinger/AudioFlinger.cpp)
 - [tinyalsa](https://github.com/tinyalsa/tinyalsa)
+- [Lantronix Blog about the Hexagon DSP](https://www.lantronix.com/blog/using-the-hexagon-dsp/)
